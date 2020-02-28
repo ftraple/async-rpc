@@ -7,7 +7,7 @@
 
 namespace arpc {
 
-class ISendReceive {
+class IConnection {
    public:
     virtual bool Send(const unsigned char* data, size_t size) = 0;
 

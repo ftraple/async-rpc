@@ -8,19 +8,19 @@ bool SdlClientConnection::Connect(const std::string& host, uint16_t port) {
     }
     IPaddress ip_address;
     if (SDLNet_ResolveHost(&ip_address, host.c_str(), port) == -1) {
-      printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+        printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
         return false;
     }
     m_client_socket = SDLNet_TCP_Open(&ip_address);
     if (!m_client_socket) {
-      printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+        printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
         return false;
     }
     return true;
 }
 
 void SdlClientConnection::Disconnect() {
-    SDLNet_TCP_Close(m_client_socket);    
+    SDLNet_TCP_Close(m_client_socket);
     SDLNet_Quit();
 }
 

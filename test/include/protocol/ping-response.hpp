@@ -5,7 +5,9 @@ class PingResponse : public arpc::Message {
 
     public:
 
-    PingResponse(int type, int version) : Message(type, version) {}
+    PingResponse() : Message(MessageType::pong, 0) {}
+
+    static Message Create() {return PingResponse();}
 
     int SetCounter(int counter) {m_counter = counter;}
 

@@ -3,32 +3,54 @@
 
 namespace arpc {
 
-MessageHandler::MessageHandler(ISendReceive& connection)
+MessageHandler::MessageHandler(IConnection& connection)
     : m_connection(connection) {}
 
 void MessageHandler::RegisterMessage(int type, int version,
-                                     std::function<void(uint16_t, uint16_t)> create_message,
+                                     std::function<Message()> create_message_function,
                                      std::function<void(const Message&)> caller) {
+    m_create_message_list[std::make_tuple(type, version)] = create_message_function;
     m_caller_list[std::make_tuple(type, version)] = caller;
 }
+
+std::optional<Message> MessageHandler::CreateMessage(uint16_t type, uint16_t version) {
+    auto create_message_function = m_create_message_list[std::make_tuple(type, version)];
+    if (!create_message_function) {
+        return std::nullopt;
+    }
+    Message message = create_message_function();
+    return message;
+
+}
+
+std::function<void(const Message&)> MessageHandler::FindCaller(uint16_t type, uint16_t version) {
+    auto caller = m_caller_list[std::make_tuple(type, version)];
+    if (!caller) {
+        return nullptr;
+    }
+    return caller;
+}
+
 
 void MessageHandler::ReceiveMessage(std::chrono::milliseconds timeout) {
     Message::Header message_header;
     m_connection.Receive((unsigned char*)&message_header, sizeof(message_header), timeout);
-    Message message = CreateMessage(message_header.type, message_header.version);
+    auto message = CreateMessage(message_header.type, message_header.version);
+    if (!message) {
+        return;
+    }
     if (message_header.body_size > 0) {
         unsigned char* message_body = new unsigned char[message_header.body_size];
-        // TODO Ckeck
         m_connection.Receive(message_body, message_header.body_size, timeout);
-        //message.Unpack(message_body);
+        message->Unpack(message_body, message_header.body_size);
         delete[] message_body;
     }
-    // Execute handler function
+    auto caller = FindCaller(message_header.type, message_header.version);
+    caller(*message);
 }
 
-void MessageHandler::SendMessage(const Message& message) {
-    //MessagePack message_pack = message.Pack();
-    //m_connection.Send(message_pack.data, message_pack.size);
+void MessageHandler::SendMessage(Message& message) {
+    m_connection.Send(message.Pack(), message.PackSize());
 }
 
 }  // namespace arpc

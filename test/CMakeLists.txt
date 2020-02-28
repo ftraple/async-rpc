@@ -1,10 +1,16 @@
 
 set(THIS ${PROJECT_NAME}-test)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 set(SOURCE_FILES
+    ../arpc/source/message-handler.cpp
+    ../arpc/source/message.cpp
     source/sdl-client-connection.cpp
     source/sdl-server-connection.cpp
-    source/test.cpp)
+    source/message-handler-test.cpp
+    source/sdl-connection-test.cpp)
 
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})

@@ -3,14 +3,10 @@
 
 #include <string>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 
 namespace arpc {
-
-typedef struct {
-    size_t size;
-    unsigned char* data;
-} MessagePack;
 
 class Message {
 
@@ -25,9 +21,17 @@ class Message {
 
     Message(uint16_t type, uint16_t version);
 
-    const MessagePack& Pack();
+    uint16_t GetType();
 
-    void Unpack(const MessagePack& data_pack) const;
+    uint16_t GetVersion();
+
+    uint64_t GetId();
+
+    const unsigned char* Pack();
+
+    size_t PackSize();
+
+    void Unpack(const unsigned char* data, size_t size);
 
     protected:
 

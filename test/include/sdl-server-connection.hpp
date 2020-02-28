@@ -6,10 +6,9 @@
 #include <thread>
 #include <cstdint>
 #include <SDL2/SDL_net.h>
+#include "i-connection.hpp"
 
-#include "i-send-receive.hpp"
-
-class SdlServerConnection : public arpc::ISendReceive {
+class SdlServerConnection : public arpc::IConnection {
     public:
 
     bool Listen(uint16_t port);
