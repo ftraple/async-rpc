@@ -4,27 +4,24 @@
 bool SdlClientConnection::Connect(const std::string& host, uint16_t port) {
     if (SDLNet_Init() == -1) {
         fprintf(stderr, "ER: SDLNet_Init: %s\n", SDLNet_GetError());
-        exit(-1);
+        return false;
     }
     IPaddress ip_address;
     if (SDLNet_ResolveHost(&ip_address, host.c_str(), port) == -1) {
       printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-      exit(1);
+        return false;
     }
     m_client_socket = SDLNet_TCP_Open(&ip_address);
     if (!m_client_socket) {
       printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
-      exit(2);
+        return false;
     }
+    return true;
 }
 
 void SdlClientConnection::Disconnect() {
     SDLNet_TCP_Close(m_client_socket);    
     SDLNet_Quit();
-}
-
-bool SdlClientConnection::IsConnected() {
-    return true;
 }
 
 bool SdlClientConnection::Send(const unsigned char* data, size_t size) {

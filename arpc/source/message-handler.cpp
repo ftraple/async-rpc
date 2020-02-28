@@ -3,7 +3,7 @@
 
 namespace arpc {
 
-MessageHandler::MessageHandler(IConnection& connection)
+MessageHandler::MessageHandler(ISendReceive& connection)
     : m_connection(connection) {}
 
 void MessageHandler::RegisterMessage(int type, int version,

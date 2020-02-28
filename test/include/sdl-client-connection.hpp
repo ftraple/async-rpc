@@ -6,20 +6,18 @@
 #include <cstdint>
 #include <SDL2/SDL_net.h>
 
-#include "i-connection.hpp"
+#include "i-send-receive.hpp"
 
-class SdlClientConnection : public arpc::IConnection {
+class SdlClientConnection : public arpc::ISendReceive {
     public:
 
-    bool Connect(const std::string& host, uint16_t port) override;
+    bool Connect(const std::string& host, uint16_t port);
 
-    void Disconnect() override;
+    void Disconnect();
 
-    bool IsConnected() override;
+    bool Send(const unsigned char* data, size_t size);
 
-    bool Send(const unsigned char* data, size_t size) override;
-
-    bool Receive(unsigned char* data, size_t max_size, std::chrono::milliseconds) override;
+    bool Receive(unsigned char* data, size_t max_size, std::chrono::milliseconds);
 
     private:
 

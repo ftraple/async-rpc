@@ -7,18 +7,16 @@
 #include <cstdint>
 #include <SDL2/SDL_net.h>
 
-#include "i-connection.hpp"
+#include "i-send-receive.hpp"
 
-class SdlServerConnection : public arpc::IConnection {
+class SdlServerConnection : public arpc::ISendReceive {
     public:
 
-    bool Connect(const std::string& host, uint16_t port) override;
+    bool Listen(uint16_t port);
 
-    void Accept();
+    bool Accept();
 
-    void Disconnect() override;
-
-    bool IsConnected() override;
+    void Disconnect();
 
     bool Send(const unsigned char* data, size_t size) override;
 
