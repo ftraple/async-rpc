@@ -1,6 +1,6 @@
 #include <cstdint>
 #include "message.hpp"
-#include "defines.hpp"
+#include "message-type.hpp"
 
 class PingRequest : public arpc::Message {
 
@@ -8,7 +8,7 @@ class PingRequest : public arpc::Message {
 
     PingRequest() : Message(MessageType::ping, 0) {}
 
-    static Message Create() {return PingRequest();}
+    static Message* Create() {return new PingRequest();}
 
     int SetCounter(int counter) {m_counter = counter;}
 
@@ -16,7 +16,7 @@ class PingRequest : public arpc::Message {
 
     private:
 
-    int m_counter;
+    int m_counter{0};
 
-    // MSG_PACK(m_counter);
+    ARPC_MSG_PACK(m_counter);
 };

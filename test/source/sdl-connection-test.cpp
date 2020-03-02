@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <thread>
 #include <chrono>
 #include <iostream>
 #include "sdl-client-connection.hpp"
@@ -7,8 +8,8 @@
 class SdlConnectionTest : public ::testing::Test {
    protected:
     void SetUp() override {
-        m_server.Listen(8000);
-        EXPECT_TRUE(m_client.Connect("localhost", 8000));
+        m_server.Listen(8001);
+        EXPECT_TRUE(m_client.Connect("localhost", 8001));
         EXPECT_TRUE(m_server.Accept());
     }
 

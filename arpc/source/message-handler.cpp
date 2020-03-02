@@ -7,23 +7,21 @@ MessageHandler::MessageHandler(IConnection& connection)
     : m_connection(connection) {}
 
 void MessageHandler::RegisterMessage(int type, int version,
-                                     std::function<Message()> create_message_function,
-                                     std::function<void(const Message&)> caller) {
+                                     CreateMessageFunction create_message_function,
+                                     CallerFunction caller) {
     m_create_message_list[std::make_tuple(type, version)] = create_message_function;
     m_caller_list[std::make_tuple(type, version)] = caller;
 }
 
-std::optional<Message> MessageHandler::CreateMessage(uint16_t type, uint16_t version) {
+std::optional<Message*> MessageHandler::CreateMessage(uint16_t type, uint16_t version) {
     auto create_message_function = m_create_message_list[std::make_tuple(type, version)];
     if (!create_message_function) {
         return std::nullopt;
     }
-    Message message = create_message_function();
-    return message;
-
+    return create_message_function();
 }
 
-std::function<void(const Message&)> MessageHandler::FindCaller(uint16_t type, uint16_t version) {
+CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
     auto caller = m_caller_list[std::make_tuple(type, version)];
     if (!caller) {
         return nullptr;
@@ -39,14 +37,15 @@ void MessageHandler::ReceiveMessage(std::chrono::milliseconds timeout) {
     if (!message) {
         return;
     }
-    if (message_header.body_size > 0) {
-        unsigned char* message_body = new unsigned char[message_header.body_size];
-        m_connection.Receive(message_body, message_header.body_size, timeout);
-        message->Unpack(message_body, message_header.body_size);
-        delete[] message_body;
-    }
+    // if (message_header.body_size > 0) {
+    //     unsigned char* message_body = new unsigned char[message_header.body_size];
+    //     m_connection.Receive(message_body, message_header.body_size, timeout);
+    //     message->Unpack(message_body, message_header.body_size);
+    //     delete[] message_body;
+    // }
     auto caller = FindCaller(message_header.type, message_header.version);
     caller(*message);
+    delete *message;
 }
 
 void MessageHandler::SendMessage(Message& message) {

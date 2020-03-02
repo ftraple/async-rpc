@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <vector>
+#include "pack.hpp"
 
 namespace arpc {
 
