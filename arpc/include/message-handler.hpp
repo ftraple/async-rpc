@@ -1,6 +1,5 @@
 #include <chrono>
 #include <functional>
-#include <optional>
 #include <memory>
 #include <map>
 #include <tuple>
@@ -29,7 +28,7 @@ class MessageHandler {
     std::map<std::tuple<uint16_t, uint16_t>, CreateMessageFunction> m_create_message_list;
     std::map<std::tuple<uint16_t, uint16_t>, CallerFunction> m_caller_list;
 
-    std::optional<Message*> CreateMessage(uint16_t type, uint16_t version);
+    Message* CreateMessage(uint16_t type, uint16_t version);
 
     CallerFunction FindCaller(uint16_t type, uint16_t version);
     

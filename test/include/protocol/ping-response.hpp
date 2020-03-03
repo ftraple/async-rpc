@@ -18,5 +18,5 @@ class PingResponse : public arpc::Message {
 
     int m_counter{0};
 
-     ARPC_MSG_PACK(m_counter);
+    ARPC_MSG_PACK(m_counter);
 };

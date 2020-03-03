@@ -18,5 +18,9 @@ class PingRequest : public arpc::Message {
 
     int m_counter{0};
 
-    ARPC_MSG_PACK(m_counter);
+    uint16_t m_value1{1};
+    float m_value2{2.5};
+    std::string m_value3{"bla"};
+
+    ARPC_MSG_PACK(m_value1, m_value2, m_value3);
 };

@@ -1,6 +1,7 @@
 #ifndef ARPC_MESSAGE_HPP_
 #define ARPC_MESSAGE_HPP_
 
+#include <iostream>
 #include <string>
 #include <cstdint>
 #include <cstring>
@@ -28,11 +29,20 @@ class Message {
 
     uint64_t GetId();
 
-    const unsigned char* Pack();
+    const unsigned char* PackHeader();
 
-    size_t PackSize();
+    size_t PackHeaderSize();
 
-    void Unpack(const unsigned char* data, size_t size);
+    void UnpackHeader(const unsigned char* data, size_t size);
+
+    virtual std::string PackBody() {
+        std::cout << "Print base" << std::endl;
+        return {"Test header"};
+    };
+
+    virtual void UnpackBody(const unsigned char* data) {
+        std::cout << "UnpackBody base" << std::endl;
+    };
 
     protected:
 
