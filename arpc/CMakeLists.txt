@@ -23,7 +23,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 
 # Instalation
-install(FILES "include/arpc.hpp"
+install(DIRECTORY "include/"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
 )
 install(TARGETS ${PROJECT_NAME}
