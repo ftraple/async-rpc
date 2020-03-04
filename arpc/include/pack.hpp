@@ -6,44 +6,103 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
-//std::cout << __PRETTY_FUNCTION__ << "\n";
+namespace arpc::pack {
 
-namespace arpc {
+//------------------------------------------------------------
 
 template <class T>
-std::string to_string_impl(T& t) {
-    std::stringstream ss;
-    ss << t;
-    return ss.str();
+size_t PackBodySizeImpl(T& t) {
+    return sizeof(t);
+}
+template <typename... Args>
+size_t PackBodySizeImpl(std::string& text) {
+    return sizeof(uint16_t) + text.size();
+}
+template <typename... Args>
+size_t PackBodySize(Args&... args) {
+    std::vector<size_t> vec = {PackBodySizeImpl(args)...};
+    size_t size{0};
+    for (const auto& it : vec) {
+        size += it;
+    }
+    return size;
 }
 
-template <typename... Param>
-std::string to_string_impl(std::string t) {
-    std::stringstream ss;
-    ss << t;
-    return ss.str();
+//------------------------------------------------------------
+
+template <typename T>
+void PackBodyImpl(unsigned char* buffer, int& offset, T& t) {
+    std::memcpy(buffer + offset, &t, sizeof(t));
+    offset += sizeof(t);
 }
 
-template <typename... Param>
-std::vector<std::string> to_string(Param&... param) {
-    return {to_string_impl(param)...};
+template <typename... Args>
+void PackBodyImpl(unsigned char* buffer, int& offset, std::string& text) {
+    uint16_t textSize = text.size();
+    std::memcpy(buffer + offset, &textSize, sizeof(textSize));
+    offset += sizeof(textSize);
+    std::memcpy(buffer + offset, text.data(), textSize);
+    offset += textSize;
 }
 
-}  // namespace arpc
+template <typename First, typename... Args>
+void PackBodyImpl(unsigned char* buffer, int& offset, First& first, Args&... args) {
+    PackBodyImpl(buffer, offset, first);
+    PackBodyImpl(buffer, offset, args...);
+}
 
-#define ARPC_MSG_PACK(args...)                                          \
-    std::string PackBody() {                                            \
-        auto vec = arpc::to_string(args);                               \
-        for (const auto& it : vec) {                                    \
-            std::cout << it << std::endl;                               \
-        }                                                               \
-        return {"Test Body"};                                           \
-    }                                                                   \
-    void UnpackBody(const unsigned char* data) {                        \
-        std::cout << "UnpackBody derivided" << std::endl;               \
+template <typename... Args>
+void PackBody(unsigned char* buffer, Args&... args) {
+    int offset{0};
+    PackBodyImpl(buffer, offset, args...);
+}
+
+//------------------------------------------------------------
+
+template <typename T>
+void UnpackBodyImpl(const unsigned char* buffer, int& offset, T& t) {
+    std::memcpy(&t, buffer + offset, sizeof(t));
+    offset += sizeof(t);
+}
+
+template <typename... Args>
+void UnpackBodyImpl(const unsigned char* buffer, int& offset, std::string& text) {
+    uint16_t textSize{0};
+    std::memcpy(&textSize, buffer + offset, sizeof(textSize));
+    offset += sizeof(textSize);
+    text.resize(textSize);
+    std::memcpy(text.data(), buffer + offset, 20);
+    offset += textSize;
+}
+
+template <typename First, typename... Args>
+void UnpackBodyImpl(const unsigned char* buffer, int& offset, First& first, Args&... args) {
+    UnpackBodyImpl(buffer, offset, first);
+    UnpackBodyImpl(buffer, offset, args...);
+}
+
+template <typename... Args>
+void UnpackBody(const unsigned char* buffer, Args&... args) {
+    int offset{0};
+    UnpackBodyImpl(buffer, offset, args...);
+}
+
+//------------------------------------------------------------
+
+}  // namespace arpc::pack
+
+#define ARPC_MSG_PACK(args...)                     \
+    size_t PackBodySize() {                        \
+        return arpc::pack::PackBodySize(args);     \
+    }                                              \
+    void PackBody(unsigned char* buffer) {         \
+        arpc::pack::PackBody(buffer, args);        \
+    }                                              \
+    void UnpackBody(const unsigned char* buffer) { \
+        arpc::pack::UnpackBody(buffer, args);      \
     }
 
 #endif  // ARPC_PACK_HPP_

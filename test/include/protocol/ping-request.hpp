@@ -6,9 +6,11 @@ class PingRequest : public arpc::Message {
 
     public:
 
-    PingRequest() : Message(MessageType::ping, 0) {}
+    PingRequest() : Message(MessageType::ping, 0) {
+        m_header.body_size = PackBodySize();
+    }
 
-    static Message* Create() {return new PingRequest();}
+    static PingRequest* Create() {return new PingRequest();}
 
     int SetCounter(int counter) {m_counter = counter;}
 
@@ -16,11 +18,7 @@ class PingRequest : public arpc::Message {
 
     private:
 
-    int m_counter{0};
-
-    uint16_t m_value1{1};
-    float m_value2{2.5};
-    std::string m_value3{"bla"};
-
-    ARPC_MSG_PACK(m_value1, m_value2, m_value3);
+    uint64_t m_counter{111};
+        
+    public: ARPC_MSG_PACK(m_counter);
 };

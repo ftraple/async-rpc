@@ -33,26 +33,21 @@ CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
 void MessageHandler::ReceiveMessage(std::chrono::milliseconds timeout) {
     Message::Header message_header;
     m_connection.Receive((unsigned char*)&message_header, sizeof(message_header), timeout);
-    Message* message = CreateMessage(message_header.type, message_header.version);
+    auto message = CreateMessage(message_header.type, message_header.version);
     if (!message) {
         return;
     }
-    message->PackBody();
     if (message_header.body_size > 0) {
-        unsigned char* message_body = new unsigned char[message_header.body_size];
-        m_connection.Receive(message_body, sizeof(message_body), timeout);
-        message->UnpackBody(message_body);
-        delete[] message_body;
+        unsigned char* buffer = new unsigned char[message_header.body_size];
+        memset(buffer, 0, message_header.body_size);
+        message->PackBody(buffer);
+        m_connection.Receive(buffer, message_header.body_size, timeout);
+        message->UnpackBody(buffer);
+        delete[] buffer;
      }
     auto caller = FindCaller(message_header.type, message_header.version);
     caller(message);
     delete message;
-}
-
-void MessageHandler::SendMessage(Message& message) {
-    m_connection.Send(message.PackHeader(), message.PackHeaderSize());
-    std::string pack = message.PackBody();
-    m_connection.Send((const unsigned char*)pack.data(), pack.size());
 }
 
 }  // namespace arpc

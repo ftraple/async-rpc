@@ -21,7 +21,16 @@ class MessageHandler {
 
     void ReceiveMessage(std::chrono::milliseconds timeout);
 
-    void SendMessage(Message& message);
+    template<typename T>
+    void SendMessage(T& message) {
+        m_connection.Send(message.PackHeader(), message.PackHeaderSize());
+        size_t bufferSize = message.PackBodySize();
+        unsigned char* buffer = new unsigned char[bufferSize];
+        memset(buffer, 0, bufferSize);
+        message.PackBody(buffer);
+        m_connection.Send(buffer, bufferSize);
+        delete[] buffer;
+    }
 
    private:
     IConnection& m_connection;

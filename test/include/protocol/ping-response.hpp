@@ -6,9 +6,11 @@ class PingResponse : public arpc::Message {
 
     public:
 
-    PingResponse() : Message(MessageType::pong, 0) {}
+    PingResponse() : Message(MessageType::pong, 0) {
+        m_header.body_size = PackBodySize();
+    }
 
-    static Message* Create() {return new PingResponse();}
+    static PingResponse* Create() {return new PingResponse();}
 
     int SetCounter(int counter) {m_counter = counter;}
 
@@ -18,5 +20,5 @@ class PingResponse : public arpc::Message {
 
     int m_counter{0};
 
-    ARPC_MSG_PACK(m_counter);
+    public: ARPC_MSG_PACK(m_counter);
 };

@@ -4,7 +4,7 @@
 namespace arpc {
 
 Message::Message(uint16_t type, uint16_t version)
-    : m_header{type, version, 0} {}
+    : m_header{type, version, 0, 0} {}
 
 uint16_t Message::GetType() {return m_header.type;}
 
@@ -20,6 +20,6 @@ size_t Message::PackHeaderSize() {
     return sizeof(m_header);
 }
 
-void Message::UnpackHeader(const unsigned char* pack, size_t size) {}
+void Message::UnpackHeader(const unsigned char* buffer, size_t size) {}
 
 }  // namespace arpc

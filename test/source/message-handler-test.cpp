@@ -27,12 +27,12 @@ class MessageHandlerTest : public ::testing::Test {
 
 void HandlePingRequest(arpc::Message* message) {
     PingRequest* request = (PingRequest*)message;
-    std::cout << "Ping request counter: " << request->GetCounter() << std::endl;
+    EXPECT_TRUE(request->GetCounter() == 111);
 }
 
 void HandlePingResponse(arpc::Message* message) {
     PingResponse* response = (PingResponse*)message;
-    std::cout << "Ping response counter: " << response->GetCounter() << std::endl;
+    EXPECT_TRUE(response->GetCounter() == 222);
 }
 
 TEST_F(MessageHandlerTest, SendReceiveTest) {
@@ -47,14 +47,13 @@ TEST_F(MessageHandlerTest, SendReceiveTest) {
     PingRequest pingRequest;
     pingRequest.SetCounter(111);
     client_message_handler.SendMessage(pingRequest);
-
+    // Server receive a ping
     server_message_handler.ReceiveMessage(std::chrono::milliseconds{1000});
-
     // Server send pong
     PingResponse pingResponse;
     pingResponse.SetCounter(222);
     server_message_handler.SendMessage(pingResponse);
-
+    // Client receive a pong
     client_message_handler.ReceiveMessage(std::chrono::milliseconds{1000});
 }
 

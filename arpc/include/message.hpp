@@ -33,16 +33,13 @@ class Message {
 
     size_t PackHeaderSize();
 
-    void UnpackHeader(const unsigned char* data, size_t size);
+    void UnpackHeader(const unsigned char* buffer, size_t size);
 
-    virtual std::string PackBody() {
-        std::cout << "Print base" << std::endl;
-        return {"Test header"};
-    };
+    size_t PackBodySize() {return 0;}
 
-    virtual void UnpackBody(const unsigned char* data) {
-        std::cout << "UnpackBody base" << std::endl;
-    };
+    virtual void PackBody(const unsigned char* buffer) {}
+
+    virtual void UnpackBody(const unsigned char* buffer) {}
 
     protected:
 
