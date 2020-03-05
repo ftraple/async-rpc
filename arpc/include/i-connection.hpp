@@ -9,9 +9,9 @@ namespace arpc {
 
 class IConnection {
    public:
-    virtual bool Send(const unsigned char* data, size_t size) = 0;
+    virtual bool Send(const unsigned char* data, size_t size, bool more) = 0;
 
-    virtual bool Receive(unsigned char* data, size_t max_size, std::chrono::milliseconds) = 0;
+    virtual bool Receive(unsigned char* data, size_t size) = 0;
 };
 
 }  // namespace arpc

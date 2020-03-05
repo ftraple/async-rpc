@@ -24,14 +24,17 @@ void SdlClientConnection::Disconnect() {
     SDLNet_Quit();
 }
 
-bool SdlClientConnection::Send(const unsigned char* data, size_t size) {
-    SDLNet_TCP_Send(m_client_socket, data, size);
+bool SdlClientConnection::Send(const unsigned char* data, size_t size, bool more) {
+    int send_size = SDLNet_TCP_Send(m_client_socket, data, size);
+    if (send_size != size) {
+        return false;
+    }
     return true;
 }
 
-bool SdlClientConnection::Receive(unsigned char* data, size_t max_size, std::chrono::milliseconds) {
-    int received_size = SDLNet_TCP_Recv(m_client_socket, data, max_size);
-    if (received_size != max_size) {
+bool SdlClientConnection::Receive(unsigned char* data, size_t size) {
+    int received_size = SDLNet_TCP_Recv(m_client_socket, data, size);
+    if (received_size != size) {
         return false;
     }
     return true;

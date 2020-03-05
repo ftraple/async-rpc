@@ -8,7 +8,7 @@ MessageHandler::MessageHandler(IConnection& connection)
 
 void MessageHandler::RegisterMessage(int type, int version,
                                      CreateMessageFunction create_message_function,
-                                     CallerFunction caller) {
+                                     std::function<void(Message*)> caller) {
     m_create_message_list[std::make_tuple(type, version)] = create_message_function;
     m_caller_list[std::make_tuple(type, version)] = caller;
 }
@@ -29,25 +29,37 @@ CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
     return caller;
 }
 
-
-void MessageHandler::ReceiveMessage(std::chrono::milliseconds timeout) {
+bool MessageHandler::ReceiveMessage() {
     Message::Header message_header;
-    m_connection.Receive((unsigned char*)&message_header, sizeof(message_header), timeout);
+    if (!m_connection.Receive((unsigned char*)&message_header, sizeof(message_header))) {
+        return false;
+    }
+    bool ret{true};
     auto message = CreateMessage(message_header.type, message_header.version);
     if (!message) {
-        return;
+        std::stringstream error;
+        error << "Fail to create the message type [" << message_header.type << "] version [" << message_header.version << "]";
+        throw std::runtime_error(error.str());
     }
     if (message_header.body_size > 0) {
         unsigned char* buffer = new unsigned char[message_header.body_size];
         memset(buffer, 0, message_header.body_size);
-        message->PackBody(buffer);
-        m_connection.Receive(buffer, message_header.body_size, timeout);
+        if (!m_connection.Receive(buffer, message_header.body_size)) {
+            ret = false;
+        }
         message->UnpackBody(buffer);
         delete[] buffer;
-     }
+    }
     auto caller = FindCaller(message_header.type, message_header.version);
+    if (caller == nullptr) {
+        delete message;
+        std::stringstream error;
+        error << "Fail to find the caller from message type:" << message_header.type << " version: " << message_header.version;
+        throw std::runtime_error(error.str());
+    }
     caller(message);
     delete message;
+    return ret;
 }
 
 }  // namespace arpc

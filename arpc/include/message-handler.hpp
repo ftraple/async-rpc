@@ -1,8 +1,14 @@
+#ifndef ARPC_MESSAGE_HANDLER_HPP_
+#define ARPC_MESSAGE_HANDLER_HPP_
+
 #include <chrono>
 #include <functional>
 #include <memory>
 #include <map>
 #include <tuple>
+#include <exception>
+#include <string>
+#include <sstream>
 #include "i-connection.hpp"
 #include "message.hpp"
 
@@ -17,19 +23,25 @@ class MessageHandler {
 
     void RegisterMessage(int type, int version,
                          CreateMessageFunction create_message_function,
-                         CallerFunction caller);
+                         std::function<void(Message*)> caller);
 
-    void ReceiveMessage(std::chrono::milliseconds timeout);
+    bool ReceiveMessage();
 
-    template<typename T>
-    void SendMessage(T& message) {
-        m_connection.Send(message.PackHeader(), message.PackHeaderSize());
+    template <typename T>
+    bool SendMessage(T& message) {
+        if (!m_connection.Send(message.PackHeader(), message.PackHeaderSize(), true)) {
+            return false;
+        }
         size_t bufferSize = message.PackBodySize();
         unsigned char* buffer = new unsigned char[bufferSize];
         memset(buffer, 0, bufferSize);
         message.PackBody(buffer);
-        m_connection.Send(buffer, bufferSize);
+        if (!m_connection.Send(buffer, bufferSize, false)) {
+            delete[] buffer;
+            return false;
+        }
         delete[] buffer;
+        return true;
     }
 
    private:
@@ -40,7 +52,8 @@ class MessageHandler {
     Message* CreateMessage(uint16_t type, uint16_t version);
 
     CallerFunction FindCaller(uint16_t type, uint16_t version);
-    
 };
 
 }  // namespace arpc
+
+#endif  // ARPC_MESSAGE_HANDLER_HPP_

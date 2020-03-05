@@ -44,16 +44,16 @@ TEST_F(MessageHandlerTest, SendReceiveTest) {
     client_message_handler.RegisterMessage(MessageType::pong, 0, PingResponse::Create, HandlePingResponse);
 
     // Client send ping
-    PingRequest pingRequest;
-    pingRequest.SetCounter(111);
-    client_message_handler.SendMessage(pingRequest);
+    PingRequest ping_request;
+    ping_request.SetCounter(111);
+    client_message_handler.SendMessage(ping_request);
     // Server receive a ping
-    server_message_handler.ReceiveMessage(std::chrono::milliseconds{1000});
+    server_message_handler.ReceiveMessage();
     // Server send pong
-    PingResponse pingResponse;
-    pingResponse.SetCounter(222);
-    server_message_handler.SendMessage(pingResponse);
+    PingResponse ping_response;
+    ping_response.SetCounter(222);
+    server_message_handler.SendMessage(ping_response);
     // Client receive a pong
-    client_message_handler.ReceiveMessage(std::chrono::milliseconds{1000});
+    client_message_handler.ReceiveMessage();
 }
 

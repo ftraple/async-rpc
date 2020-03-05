@@ -11,9 +11,7 @@
 namespace arpc {
 
 class Message {
-
-    public:
-
+   public:
     struct Header {
         uint16_t type;
         uint16_t version;
@@ -22,6 +20,8 @@ class Message {
     };
 
     Message(uint16_t type, uint16_t version);
+
+    ~Message() {};
 
     uint16_t GetType();
 
@@ -33,16 +33,13 @@ class Message {
 
     size_t PackHeaderSize();
 
-    void UnpackHeader(const unsigned char* buffer, size_t size);
-
-    size_t PackBodySize() {return 0;}
+    size_t PackBodySize() { return 0; }
 
     virtual void PackBody(const unsigned char* buffer) {}
 
     virtual void UnpackBody(const unsigned char* buffer) {}
 
-    protected:
-
+   protected:
     Header m_header;
 };
 

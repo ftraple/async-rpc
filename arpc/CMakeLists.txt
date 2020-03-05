@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCE_FILES 
+    source/message.cpp
     source/message-handler.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})

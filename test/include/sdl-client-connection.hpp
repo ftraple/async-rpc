@@ -15,9 +15,9 @@ class SdlClientConnection : public arpc::IConnection {
 
     void Disconnect();
 
-    bool Send(const unsigned char* data, size_t size) override;
+    bool Send(const unsigned char* data, size_t size, bool more) override;
 
-    bool Receive(unsigned char* data, size_t max_size, std::chrono::milliseconds) override;
+    bool Receive(unsigned char* data, size_t size) override;
 
     private:
 
