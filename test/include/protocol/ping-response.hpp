@@ -4,9 +4,7 @@
 
 class PingResponse : public arpc::Message {
    public:
-    PingResponse() : Message(MessageType::pong, 0) {
-        m_header.body_size = PackBodySize();
-    }
+    PingResponse() : Message(MessageType::pong, 0) {}
 
     static PingResponse* Create() { return new PingResponse(); }
 

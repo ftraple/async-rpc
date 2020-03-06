@@ -31,7 +31,7 @@ CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
 
 bool MessageHandler::ReceiveMessage() {
     Message::Header message_header;
-    if (!m_connection.Receive((unsigned char*)&message_header, sizeof(message_header))) {
+    if (!m_connection.Receive((char*)&message_header, sizeof(message_header))) {
         return false;
     }
     bool ret{true};
@@ -42,7 +42,7 @@ bool MessageHandler::ReceiveMessage() {
         throw std::runtime_error(error.str());
     }
     if (message_header.body_size > 0) {
-        unsigned char* buffer = new unsigned char[message_header.body_size];
+        char* buffer = new char[message_header.body_size];
         memset(buffer, 0, message_header.body_size);
         if (!m_connection.Receive(buffer, message_header.body_size)) {
             ret = false;

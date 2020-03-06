@@ -29,11 +29,12 @@ class MessageHandler {
 
     template <typename T>
     bool SendMessage(T& message) {
+        message.SetBodySize(message.PackBodySize());
         if (!m_connection.Send(message.PackHeader(), message.PackHeaderSize(), true)) {
             return false;
         }
         size_t bufferSize = message.PackBodySize();
-        unsigned char* buffer = new unsigned char[bufferSize];
+        char* buffer = new char[bufferSize];
         memset(buffer, 0, bufferSize);
         message.PackBody(buffer);
         if (!m_connection.Send(buffer, bufferSize, false)) {

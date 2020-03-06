@@ -28,6 +28,7 @@ class MessageHandlerTest : public ::testing::Test {
 void HandlePingRequest(arpc::Message* message) {
     PingRequest* request = (PingRequest*)message;
     EXPECT_TRUE(request->GetCounter() == 111);
+    EXPECT_TRUE(request->GetFileName().compare("Fox Molder") == 0);
 }
 
 void HandlePingResponse(arpc::Message* message) {
@@ -46,10 +47,11 @@ TEST_F(MessageHandlerTest, SendReceiveTest) {
     // Client send ping
     PingRequest ping_request;
     ping_request.SetCounter(111);
+    ping_request.SetFileName("Fox Molder");
     client_message_handler.SendMessage(ping_request);
     // Server receive a ping
-    server_message_handler.ReceiveMessage();
-    // Server send pong
+     server_message_handler.ReceiveMessage();
+    // // Server send pong
     PingResponse ping_response;
     ping_response.SetCounter(222);
     server_message_handler.SendMessage(ping_response);

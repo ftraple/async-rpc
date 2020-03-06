@@ -29,15 +29,17 @@ class Message {
 
     uint64_t GetId();
 
-    const unsigned char* PackHeader();
+    void SetBodySize(uint32_t body_size);
+
+    const char* PackHeader();
 
     size_t PackHeaderSize();
 
     size_t PackBodySize() { return 0; }
 
-    virtual void PackBody(const unsigned char* buffer) {}
+    virtual void PackBody(char* buffer) {}
 
-    virtual void UnpackBody(const unsigned char* buffer) {}
+    virtual void UnpackBody(const char* buffer) {}
 
    protected:
     Header m_header;

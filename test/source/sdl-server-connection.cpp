@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "sdl-server-connection.hpp"
 
 bool SdlServerConnection::Listen(uint16_t port) {
@@ -32,7 +32,7 @@ void SdlServerConnection::Disconnect() {
     SDLNet_Quit();
 }
 
-bool SdlServerConnection::Send(const unsigned char* data, size_t size, bool more) {
+bool SdlServerConnection::Send(const char* data, size_t size, bool more) {
     int send_size = SDLNet_TCP_Send(m_socket, data, size);
     if (send_size != size) {
         return false;
@@ -40,7 +40,7 @@ bool SdlServerConnection::Send(const unsigned char* data, size_t size, bool more
     return true;
 }
 
-bool SdlServerConnection::Receive(unsigned char* data, size_t size) {
+bool SdlServerConnection::Receive(char* data, size_t size) {
     int received_size = SDLNet_TCP_Recv(m_socket, data, size);
     if (received_size != size) {
         return false;

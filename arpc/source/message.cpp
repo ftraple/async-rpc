@@ -12,8 +12,10 @@ uint16_t Message::GetVersion() { return m_header.version; }
 
 uint64_t Message::GetId() { return m_header.id; }
 
-const unsigned char* Message::PackHeader() {
-    return (const unsigned char*)&m_header;
+void Message::SetBodySize(uint32_t body_size) {m_header.body_size = body_size;}
+
+const char* Message::PackHeader() {
+    return (const char*)&m_header;
 }
 
 size_t Message::PackHeaderSize() {
