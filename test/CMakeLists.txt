@@ -16,8 +16,8 @@ set(SOURCE_FILES
     ../arpc/source/message.cpp
     source/sdl-client-connection.cpp
     source/sdl-server-connection.cpp
-    source/message-handler-test.cpp)
-    #source/sdl-connection-test.cpp)
+    source/message-handler-test.cpp
+    source/sdl-connection-test.cpp)
 
 include_directories(../arpc/include)
 include_directories(include)
