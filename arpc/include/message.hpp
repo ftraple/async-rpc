@@ -1,11 +1,13 @@
 #ifndef ARPC_MESSAGE_HPP_
 #define ARPC_MESSAGE_HPP_
 
-#include <iostream>
-#include <string>
 #include <cstdint>
 #include <cstring>
+#include <iostream>
+#include <memory>
+#include <string>
 #include <vector>
+
 #include "pack.hpp"
 
 namespace arpc {
@@ -17,11 +19,13 @@ class Message {
         uint16_t version;
         uint64_t id;
         uint32_t body_size;
-    };
+        Header(uint16_t a_type, uint16_t a_version, uint64_t a_id, uint32_t a_body_size)
+            : type{a_type}, version{a_version}, id{a_id}, body_size{a_body_size} {}
+    }__attribute__((packed));
 
     Message(uint16_t type, uint16_t version);
 
-    ~Message() {};
+    ~Message(){};
 
     uint16_t GetType();
 
@@ -42,7 +46,7 @@ class Message {
     virtual void UnpackBody(const char* buffer) {}
 
    protected:
-    Header m_header;
+    std::unique_ptr<Header> m_header;
 };
 
 }  // namespace arpc

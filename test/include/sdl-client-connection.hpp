@@ -5,11 +5,14 @@
 #include <chrono>
 #include <cstdint>
 #include <SDL2/SDL_net.h>
-
-#include "i-connection.hpp"
+#include <arpc/i-connection.hpp>
 
 class SdlClientConnection : public arpc::IConnection {
     public:
+
+    SdlClientConnection();
+
+    ~SdlClientConnection();
 
     bool Connect(const std::string& host, uint16_t port);
 
@@ -21,7 +24,8 @@ class SdlClientConnection : public arpc::IConnection {
 
     private:
 
-    TCPsocket m_client_socket;
+    TCPsocket m_socket;
+    bool m_is_connected{false};
 };
 
 #endif // SDL_CLIENT_CONNECTION_HPP_
