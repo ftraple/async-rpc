@@ -25,7 +25,7 @@ class Message {
 
     Message(uint16_t type, uint16_t version);
 
-    ~Message(){};
+    virtual ~Message() {};
 
     uint16_t GetType();
 
