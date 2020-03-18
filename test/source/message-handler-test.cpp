@@ -25,15 +25,17 @@ class MessageHandlerTest : public ::testing::Test {
     SdlServerConnection m_server;
 };
 
-void HandlePingRequest(arpc::Message* message) {
+bool HandlePingRequest(arpc::Message* message) {
     PingRequest* request = (PingRequest*)message;
     EXPECT_TRUE(request->GetCounter() == 111);
     EXPECT_TRUE(request->GetFileName().compare("Fox Molder") == 0);
+    return true;
 }
 
-void HandlePingResponse(arpc::Message* message) {
+bool HandlePingResponse(arpc::Message* message) {
     PingResponse* response = (PingResponse*)message;
     EXPECT_TRUE(response->GetCounter() == 222);
+    return true;
 }
 
 TEST_F(MessageHandlerTest, SendReceiveTest) {

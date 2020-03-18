@@ -15,7 +15,7 @@
 namespace arpc {
 
 typedef std::function<Message*(void)> CreateMessageFunction;
-typedef std::function<void(Message*)> CallerFunction;
+typedef std::function<bool(Message*)> CallerFunction;
 
 class MessageHandler {
    public:
@@ -23,7 +23,7 @@ class MessageHandler {
 
     void RegisterMessage(int type, int version,
                          CreateMessageFunction create_message_function,
-                         std::function<void(Message*)> caller);
+                         CallerFunction caller);
 
     bool ReceiveMessage();
 

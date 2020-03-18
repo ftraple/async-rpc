@@ -8,7 +8,7 @@ MessageHandler::MessageHandler(IConnection& connection)
 
 void MessageHandler::RegisterMessage(int type, int version,
                                      CreateMessageFunction create_message_function,
-                                     std::function<void(Message*)> caller) {
+                                     CallerFunction caller) {
     m_create_message_list[std::make_tuple(type, version)] = create_message_function;
     m_caller_list[std::make_tuple(type, version)] = caller;
 }
@@ -57,7 +57,7 @@ bool MessageHandler::ReceiveMessage() {
         error << "Fail to find the caller from message type:" << message_header.type << " version: " << message_header.version;
         throw std::runtime_error(error.str());
     }
-    caller(message);
+    ret = caller(message);
     delete message;
     return ret;
 }
