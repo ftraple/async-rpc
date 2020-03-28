@@ -37,9 +37,8 @@ bool MessageHandler::ReceiveMessage() {
     bool ret{true};
     auto message = CreateMessage(message_header.type, message_header.version);
     if (!message) {
-        std::stringstream error;
-        error << "Fail to create the message type [" << message_header.type << "] version [" << message_header.version << "]";
-        throw std::runtime_error(error.str());
+        std::cout << "ARPC: Fail to create the message type [" << message_header.type << "] version [" << message_header.version << "]";
+        return false;
     }
     if (message_header.body_size > 0) {
         char* buffer = new char[message_header.body_size];
@@ -53,9 +52,8 @@ bool MessageHandler::ReceiveMessage() {
     auto caller = FindCaller(message_header.type, message_header.version);
     if (caller == nullptr) {
         delete message;
-        std::stringstream error;
-        error << "Fail to find the caller from message type:" << message_header.type << " version: " << message_header.version;
-        throw std::runtime_error(error.str());
+        std::cout << "ARPC: Fail to find the caller from message type:" << message_header.type << " version: " << message_header.version;
+        return false;
     }
     ret = caller(message);
     delete message;

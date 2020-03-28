@@ -20,7 +20,7 @@ size_t PackBodySizeImpl(T& t) {
 }
 template <typename... Args>
 size_t PackBodySizeImpl(std::string& text) {
-    return sizeof(uint16_t) + text.size();
+    return sizeof(uint64_t) + text.size();
 }
 template <typename... Args>
 size_t PackBodySize(Args&... args) {
@@ -42,7 +42,7 @@ void PackBodyImpl(char* buffer, int& offset, T& t) {
 
 template <typename... Args>
 void PackBodyImpl(char* buffer, int& offset, std::string& text) {
-    uint16_t textSize = text.length();
+    uint64_t textSize = text.size();
     std::memcpy(buffer + offset, &textSize, sizeof(textSize));
     offset += sizeof(textSize);
     std::memcpy(buffer + offset, text.data(), textSize);
@@ -71,7 +71,7 @@ void UnpackBodyImpl(const char* buffer, int& offset, T& t) {
 
 template <typename... Args>
 void UnpackBodyImpl(const char* buffer, int& offset, std::string& text) {
-    uint16_t textSize{0};
+    uint64_t textSize{0};
     std::memcpy(&textSize, buffer + offset, sizeof(textSize));
     offset += sizeof(textSize);
     text.resize(textSize);
