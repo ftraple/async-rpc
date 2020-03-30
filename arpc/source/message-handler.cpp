@@ -34,7 +34,6 @@ CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
 bool MessageHandler::ReceiveMessage() {
     Message::Header message_header{0, 0, 0};
     if (!m_connection.Receive((char*)&message_header, sizeof(message_header))) {
-        std::cout << "ARPC: Fail to receive the header." << std::endl;
         return false;
     }
     bool ret{true};
