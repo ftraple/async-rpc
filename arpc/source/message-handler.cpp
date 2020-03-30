@@ -16,6 +16,7 @@ void MessageHandler::RegisterMessage(int type, int version,
 Message* MessageHandler::CreateMessage(uint16_t type, uint16_t version) {
     auto create_message_function = m_create_message_list[std::make_tuple(type, version)];
     if (!create_message_function) {
+        std::cout << "ARPC: Fail to create the message type [" << type << "] version [" << version << "]." << std::endl;
         return nullptr;
     }
     return create_message_function();
@@ -24,6 +25,7 @@ Message* MessageHandler::CreateMessage(uint16_t type, uint16_t version) {
 CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
     auto caller = m_caller_list[std::make_tuple(type, version)];
     if (!caller) {
+        std::cout << "ARPC: Fail to find the caller to the message type [" << type << "] version [" << version << "]." << std::endl;
         return nullptr;
     }
     return caller;
@@ -32,18 +34,20 @@ CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
 bool MessageHandler::ReceiveMessage() {
     Message::Header message_header{0, 0, 0};
     if (!m_connection.Receive((char*)&message_header, sizeof(message_header))) {
+        std::cout << "ARPC: Fail to receive the header." << std::endl;
         return false;
     }
     bool ret{true};
     auto message = CreateMessage(message_header.type, message_header.version);
     if (!message) {
-        std::cout << "ARPC: Fail to create the message type [" << message_header.type << "] version [" << message_header.version << "]";
+        std::cout << "ARPC: Fail to create the message type [" << message_header.type << "] version [" << message_header.version << "]." << std::endl;
         return false;
     }
     if (message_header.body_size > 0) {
         char* buffer = new char[message_header.body_size];
         memset(buffer, 0, message_header.body_size);
         if (!m_connection.Receive(buffer, message_header.body_size)) {
+            std::cout << "ARPC: Receive body message fial, type[" << message_header.type << "] version [" << message_header.version << "]." << std::endl;
             ret = false;
         }
         message->UnpackBody(buffer);
@@ -52,7 +56,7 @@ bool MessageHandler::ReceiveMessage() {
     auto caller = FindCaller(message_header.type, message_header.version);
     if (caller == nullptr) {
         delete message;
-        std::cout << "ARPC: Fail to find the caller from message type:" << message_header.type << " version: " << message_header.version;
+        std::cout << "ARPC: Fail to find the caller from message type [" << message_header.type << "] version [" << message_header.version << "]." << std::endl;
         return false;
     }
     ret = caller(message);
