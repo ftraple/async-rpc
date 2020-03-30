@@ -2,14 +2,16 @@
 #define DGT_FILE_TRANSFER_SERVER_SOCKET_CONNECTION_HPP_
 
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <arpc/i-connection.hpp>
-#include <iostream>
+
 #include <cstdint>
 #include <cstring>
+#include <iostream>
 #include <string>
+
+#include "i-connection.hpp"
 
 class ServerSocketConnection : public arpc::IConnection {
    public:
