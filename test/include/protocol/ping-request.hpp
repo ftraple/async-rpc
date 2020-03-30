@@ -9,7 +9,7 @@ class PingRequest : public arpc::Message {
 
     static PingRequest* Create() { return new PingRequest(); }
 
-    int SetCounter(int counter) { m_counter = counter; }
+    void SetCounter(int counter) { m_counter = counter; }
 
     int GetCounter() const { return m_counter; }
 

@@ -8,7 +8,7 @@ class PingResponse : public arpc::Message {
 
     static PingResponse* Create() { return new PingResponse(); }
 
-    int SetCounter(int counter) { m_counter = counter; }
+    void SetCounter(int counter) { m_counter = counter; }
 
     int GetCounter() const { return m_counter; }
 
