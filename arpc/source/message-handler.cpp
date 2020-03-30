@@ -30,7 +30,7 @@ CallerFunction MessageHandler::FindCaller(uint16_t type, uint16_t version) {
 }
 
 bool MessageHandler::ReceiveMessage() {
-    Message::Header message_header{0, 0, 0, 0};
+    Message::Header message_header{0, 0, 0};
     if (!m_connection.Receive((char*)&message_header, sizeof(message_header))) {
         return false;
     }

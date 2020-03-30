@@ -2,14 +2,14 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
-#include "sdl-client-connection.hpp"
-#include "sdl-server-connection.hpp"
+#include "client-socket-connection.hpp"
+#include "server-socket-connection.hpp"
 
 class SdlConnectionTest : public ::testing::Test {
    protected:
     void SetUp() override {
         m_server.Listen(8001);
-        EXPECT_TRUE(m_client.Connect("localhost", 8001));
+        EXPECT_TRUE(m_client.Connect("127.0.0.1", 8001));
         EXPECT_TRUE(m_server.Accept());
     }
 
@@ -18,8 +18,8 @@ class SdlConnectionTest : public ::testing::Test {
         m_server.Disconnect();
     }
 
-    SdlClientConnection m_client;
-    SdlServerConnection m_server;
+    ClientSocketConnection m_client;
+    ServerSocketConnection m_server;
 };
 
 TEST_F(SdlConnectionTest, SendReceiveTest) {
