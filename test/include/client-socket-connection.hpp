@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string>
 
-#include "arpc/i-connection.hpp"
+#include "i-connection.hpp"
 
 class ClientSocketConnection : public arpc::IConnection {
    public:
