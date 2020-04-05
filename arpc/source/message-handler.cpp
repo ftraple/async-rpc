@@ -46,7 +46,7 @@ bool MessageHandler::ReceiveMessage() {
         char* buffer = new char[message_header.body_size];
         memset(buffer, 0, message_header.body_size);
         if (!m_connection.Receive(buffer, message_header.body_size)) {
-            std::cout << "ARPC: Receive body message fial, type[" << message_header.type << "] version [" << message_header.version << "]." << std::endl;
+            std::cout << "ARPC: Receive body message fail, type[" << message_header.type << "] version [" << message_header.version << "]." << std::endl;
             ret = false;
         }
         message->UnpackBody(buffer);

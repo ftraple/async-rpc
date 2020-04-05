@@ -29,19 +29,26 @@ class MessageHandler {
 
     template <typename T>
     bool SendMessage(T& message) {
-        message.SetBodySize(message.PackBodySize());
-        if (!m_connection.Send(message.PackHeader(), message.PackHeaderSize(), true)) {
-            return false;
-        }
         size_t bufferSize = message.PackBodySize();
-        char* buffer = new char[bufferSize];
-        memset(buffer, 0, bufferSize);
-        message.PackBody(buffer);
-        if (!m_connection.Send(buffer, bufferSize, false)) {
+        if (bufferSize == 0) {
+            message.SetBodySize(bufferSize);
+            if (!m_connection.Send(message.PackHeader(), message.PackHeaderSize(), false)) {
+                return false;
+            }
+        } else {
+            message.SetBodySize(bufferSize);
+            if (!m_connection.Send(message.PackHeader(), message.PackHeaderSize(), true)) {
+                return false;
+            }
+            char* buffer = new char[bufferSize];
+            memset(buffer, 0, bufferSize);
+            message.PackBody(buffer);
+            if (!m_connection.Send(buffer, bufferSize, false)) {
+                delete[] buffer;
+                return false;
+            }
             delete[] buffer;
-            return false;
         }
-        delete[] buffer;
         return true;
     }
 
